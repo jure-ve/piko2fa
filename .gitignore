@@ -1,0 +1,28 @@
+# Binarios
+/piko2fa
+*.exe
+
+# Vaults y respaldos: nunca al repositorio
+*.bin
+*.bak
+vault.bin*
+*.piko
+
+# Capturas de QR y exportaciones: contienen secretos en claro
+*.png
+*.PNG
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+*.heic
+*.HEIC
+*.txt
+
+# Tests de Go
+*.test
+*.out
+
+# Configuración local
+.env
+/docs
