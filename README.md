@@ -143,21 +143,70 @@ Tener contraseñas y 2FA en el mismo equipo reduce la separación entre ambos fa
 
 ## Desarrollo
 
-```bash
-go test ./...
-```
+### Compilar y construir el ejecutable
+
+Para generar el binario en la raíz del proyecto:
 
 ```bash
-go vet ./...
+# Compilación estándar para el sistema actual
+go build -o piko2fa ./cmd/piko2fa
 ```
 
-```bash
-go run honnef.co/go/tools/cmd/staticcheck@latest ./...
-```
+*(En Windows genera `piko2fa.exe` automáticamente o puedes especificar `-o piko2fa.exe`)*.
+
+Para compilar un binario optimizado para distribución (eliminando información de depuración y tablas de símbolos para reducir su tamaño):
 
 ```bash
-go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+go build -ldflags="-s -w" -o piko2fa ./cmd/piko2fa
 ```
+
+También puedes ejecutar la aplicación directamente durante el desarrollo sin compilar el binario a disco:
+
+```bash
+go run ./cmd/piko2fa [comando]
+```
+
+#### Compilación cruzada (Cross-compilation)
+
+Al no depender de CGO (`CGO_ENABLED=0`), puedes generar ejecutables para cualquier plataforma directamente desde tu equipo:
+
+```bash
+# Linux (64-bit)
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o piko2fa-linux-amd64 ./cmd/piko2fa
+
+# Windows (64-bit)
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o piko2fa-windows-amd64.exe ./cmd/piko2fa
+
+# macOS (Apple Silicon / ARM64)
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o piko2fa-darwin-arm64 ./cmd/piko2fa
+```
+
+### Pruebas y calidad de código
+
+- **Pruebas unitarias e integración:**
+  Ejecuta todos los tests de todos los paquetes del proyecto (`./...` indica recursividad):
+  ```bash
+  go test ./...
+  ```
+  *(Puedes añadir `-v` para salida detallada o `-race` para verificar carreras de datos)*.
+
+- **Análisis estático estándar (`go vet`):**
+  Herramienta oficial de Go que analiza el código fuente en busca de errores sintácticos o construcciones sospechosas (como argumentos incorrectos en llamadas de formato o cierres mal manejados):
+  ```bash
+  go vet ./...
+  ```
+
+- **Linter avanzado (`staticcheck`):**
+  Detecta bugs sutiles, código inalcanzable o muerto, simplificaciones de código y usos de APIs obsoletas:
+  ```bash
+  go run honnef.co/go/tools/cmd/staticcheck@latest ./...
+  ```
+
+- **Auditoría de vulnerabilidades (`govulncheck`):**
+  Comprueba el código y las dependencias contra la base de datos oficial de vulnerabilidades conocidas de Go (Go Vulnerability Database):
+  ```bash
+  go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+  ```
 
 ## Licencia
 
